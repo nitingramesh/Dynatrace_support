@@ -1,0 +1,3 @@
+cd dynatrace-support-copilot
+source venv/bin/activate
+jupyter lab

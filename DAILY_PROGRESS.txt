@@ -1,0 +1,113 @@
+# Dynatrace Support Copilot – Daily Progress Log
+
+---
+
+## 📅 Day 1 – Environment Setup + Vector Search Smoke Test
+
+- Created isolated Python virtual environment
+- Installed:
+  - JupyterLab
+  - ChromaDB
+  - Sentence Transformers
+  - Scraping utilities (requests, BeautifulSoup, trafilatura)
+- Registered custom Jupyter kernel (`dt-copilot`)
+- Initialized persistent ChromaDB instance
+- Loaded embedding model: `BAAI/bge-small-en-v1.5`
+- Inserted sample Dynatrace-related documents into vector database
+- Successfully executed semantic similarity query
+- Verified correct ranking of relevant documents
+
+---
+
+### 🧠 Technical Validation
+
+Validated full pipeline:
+
+Text → Embedding → Vector Storage → Similarity Search → Ranked Retrieval
+
+Confirmed:
+- Correct embedding generation
+- Proper metadata storage
+- Relevant result ranking for installation-related queries
+
+---
+
+### 📦 Deliverables
+
+- `01_chromadb_smoke_test.ipynb`
+- Persistent vector database (`chroma_db/`)
+- Working semantic search prototype
+---
+
+
+## 📅 Day 2 – Seeded Docs Ingestion (Public Dynatrace Docs)
+
+### 🎯 Objective
+Build a controlled ingestion pipeline for high-signal Dynatrace public documentation (OneAgent + Kubernetes) and persist extracted content locally for downstream chunking and vector indexing.
+
+---
+
+ **Day 2 ingestion notebook**: `02_ingest_public_docs.ipynb`
+- Built a **seed URL list** (non-random, high-signal) based on troubleshooting + deployment needs:
+  - **OneAgent**: ingest, troubleshooting, diagnostics, health, security, update, CLI config, cost allocation, Linux installation
+  - **Kubernetes**: deployment troubleshooting, platform monitoring, access tokens/permissions, log monitoring, operator (EKS/AKS), operator components
+- Implemented a **polite scraper** with headers + delay to fetch and extract content reliably
+- Extracted clean text using:
+  - `requests` (fetch)
+  - `BeautifulSoup` (title)
+  - `trafilatura` (main content extraction)
+- Stored results in a persistent raw dataset:
+  - `../data/raw/docs.jsonl`
+- Validated ingestion quality via preview:
+  - Confirmed titles, topics, URLs, and extracted text snippets are correctly populated
+
+---
+
+### 📊 Ingestion Results
+- Total records ingested: **20**
+- Errors: **0**
+- Output file: `../data/raw/docs.jsonl`
+
+---
+
+### 🧠 Why This Matters
+- This creates a **reproducible, curated knowledge base** instead of random scraping.
+- Saving to JSONL ensures we can iterate on chunking/embeddings without re-downloading docs.
+- Topic tagging (`oneagent`, `kubernetes`) sets us up for **topic-filtered retrieval** later.
+
+---
+
+---
+**Day 3 **
+Fixed project folder structure so all assets live inside dynatrace-support-copilot/
+	•	Moved data/ and chroma_db/ from Desktop into the project folder.
+	•	Created a clean “product” code structure:
+	•	Added run_copilot.py as the main entry point.
+	•	Created src/ingest, src/retrieval, src/utils directories.
+	•	Converted notebook-style logic into reusable Python modules.
+	•	Built a working retrieval CLI flow (no paid APIs):
+	•	Loaded documents from data/raw/docs.jsonl (20 URLs total).
+	•	Chunked text + embedded with sentence-transformers (BAAI/bge-small-en-v1.5).
+	•	Stored embeddings in persistent Chroma DB (chroma_db/, collection dt_public_docs).
+	•	Implemented terminal Q&A loop: choose topic + ask question → returns top sources + evidence snippets.
+	•	Improved output quality for support engineers:
+	•	Top sources now print as clean, clickable links.
+	•	Evidence snippets include a “Read full documentation → ” line.
+
+Files/folders created/updated today
+	•	run_copilot.py (terminal entry tool)
+	•	src/utils/loader.py (load JSONL)
+	•	src/ingest/chunk.py (chunking)
+	•	src/ingest/indexer.py (index builder → Chroma)
+	•	src/retrieval/search.py (retriever + formatted Support Pack output)
+	•	Ensured package init files exist under src/
+
+
+**nDay 4**
+✅ Confirmed docs.jsonl updated to 22 records via notebook ingestion
+	•	🔧 Identified community ingestion failures as “Extraction too short/empty” skips
+	•	🧭 Planned UX: topic normalization (k8s/kube→kubernetes, oa→oneagent, empty→all)
+	•	✨ Planned output improvements: dedupe sources, add score, clean URL list, snippet clamp
+	•	⚡ Planned perf: cache embedder, add non-interactive CLI flags
+
+
