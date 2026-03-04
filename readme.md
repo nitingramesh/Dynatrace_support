@@ -1,3 +1,8 @@
+TraceSage = Meaning
+
+TraceSage = A wise AI that understands system traces and helps diagnose problems.
+
+
 TraceSage is a local, documentation-driven AI assistant designed to help support engineers quickly surface relevant troubleshooting paths, identify likely causes, and reference official documentation with citations.
 
 
