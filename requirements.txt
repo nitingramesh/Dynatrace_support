@@ -2,9 +2,5 @@ requests==2.32.3
 beautifulsoup4==4.12.3
 lxml==5.3.0
 tqdm==4.66.5
-
 chromadb==0.5.5
 sentence-transformers==3.0.1
-
-# Optional but recommended for cleaner extraction (if you later switch to it)
-# trafilatura==1.9.0

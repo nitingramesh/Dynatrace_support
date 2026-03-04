@@ -51,5 +51,8 @@
          https://community.dynatrace.com/t5/Container-platforms/Dynatrace-not-detecting-Kubernetes-cluster/m-p/176551   
          https://community.dynatrace.com/t5/Troubleshooting/OneAgent-container-injection-failed/m-p/210772   
          https://community.dynatrace.com/t5/Container-platforms/Helm-chart-installation-behind-proxy/m-p/205901
+         https://docs.dynatrace.com/docs/ingest-from/setup-on-k8s/guides/deployment-and-configuration/updates-and-maintenance/update-uninstall-operator
+         https://docs.dynatrace.com/docs/ingest-from/setup-on-k8s/guides/migration/dynakube
+         https://docs.dynatrace.com/docs/ingest-from/setup-on-k8s/guides/migration/migrate-to-dto
 
 

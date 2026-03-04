@@ -31,14 +31,16 @@ pip install -U pip
 
 3.ollama serve
 4.ollama pull llama3.1:8b
-5.python -m src.ingest.seed_urls
-6.python -m src.ingest.indexer
-7.python run_copilot.py
+5.python scripts/validate_urls.py
+6.python scripts/ingest_urls.py --reset
+7.python scripts/build_index.py --reset
+8.python run_copilot.py
 
 
 if new urls are added
 
 source venv/bin/activate
-python -m src.ingest.seed_urls
-python -m src.ingest.indexer
+python scripts/ingest_urls.py --reset
+python scripts/build_index.py --reset
+python run_copilot.py
 python run_copilot.py

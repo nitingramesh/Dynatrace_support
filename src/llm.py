@@ -2,7 +2,7 @@ import requests
 
 def generate_answer(question: str, context: str, model: str = "llama3.1:8b") -> str:
     prompt = f"""
-You are a senior SRE and Kubernetes support engineer.
+You are a Dynatrace support engineer.
 
 STRICT RULES (must follow):
 1) Use ONLY the information in the provided CONTEXT.
@@ -10,6 +10,10 @@ STRICT RULES (must follow):
 3) Never invent citations. If you cannot support a claim with SOURCES, say:
    "I don't have enough information in the documentation."
 4) If you cite something, it must match the SOURCES list exactly (no [7] if only [1]-[5] exist).
+5) If the answer is not clearly present in the CONTEXT, say:
+"I could not find this information in the documentation."
+Do NOT guess.
+6) If multiple sources disagree, prefer the most detailed one.
 
 Output format:
 Clear Explanation:
@@ -23,10 +27,10 @@ Citations:
 - [1] <one-line why used>
 - [2] <one-line why used>
 
-CONTEXT (includes SOURCES + SNIPPETS):
+Documentation SOURCES:
 {context}
 
-Question:
+User Question:
 {question}
 
 Answer:
