@@ -44,3 +44,6 @@ python scripts/ingest_urls.py --reset
 python scripts/build_index.py --reset
 python run_copilot.py
 python run_copilot.py
+
+
+->streamlit run app.py

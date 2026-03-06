@@ -1,0 +1,21 @@
+Dynatrace AI Support Agent – Demo Questions
+
+1. What is Dynatrace OneAgent and what does it do?
+
+2. How does Dynatrace monitor Kubernetes clusters?
+
+3. What is Dynatrace ActiveGate and when should it be used?
+
+4. How does Dynatrace detect performance issues automatically?
+
+5. How does Dynatrace use distributed tracing to analyze application performance?
+
+6. Dynatrace OneAgent is installed but no data appears in the dashboard. How can I troubleshoot this?
+
+7. What are the common reasons Dynatrace agents fail to report metrics?
+
+8. How does Dynatrace Davis AI help with root cause analysis?
+
+9. How can I enable log monitoring in Dynatrace?
+
+10. What steps are required to install Dynatrace OneAgent on a Linux server?

@@ -19,9 +19,10 @@ Output format:
 Clear Explanation:
 <short paragraph>
 
-Steps:
-- step 1 ...
-- step 2 ...
+Steps (only if needed):
+- Provide steps only when the question requires a procedure.
+- The number of steps should depend on the complexity of the task.
+- Do NOT limit the response to a fixed number of steps.
 
 Citations:
 - [1] <one-line why used>
