@@ -1,6 +1,3 @@
-
-
-from src.llm import generate_answer
 from src.retrieval.search import Retriever
 
 import json, os, hashlib

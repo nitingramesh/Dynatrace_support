@@ -5,9 +5,9 @@ from sentence_transformers import SentenceTransformer
 
 # dynatrace-support-copilot/src/retrieval/search.py
 
-from typing import Optional, Dict, Any
 import textwrap
 import re
+
 
 def clean_snippet(text: str, url: str = "", max_chars: int = 380, width: int = 92) -> str:
     if not text:
@@ -29,6 +29,7 @@ def clean_snippet(text: str, url: str = "", max_chars: int = 380, width: int = 9
     # Wrap for terminal readability
     return textwrap.fill(s, width=width)
 
+
 class Retriever:
     def __init__(
         self,
@@ -41,14 +42,12 @@ class Retriever:
         self.col = self.client.get_or_create_collection(collection_name)
 
     def query(self, q: str, topic: Optional[str] = None, k: int = 5):
-
         q_emb = self.embedder.encode([q], normalize_embeddings=True).tolist()
-
         where = {"topic": topic} if topic else None
 
         results = self.col.query(
             query_embeddings=q_emb,
-            n_results=15,   # pull more for reranking
+            n_results=max(k * 3, 15),
             where=where,
             include=["documents", "metadatas", "distances"]
         )
@@ -61,92 +60,54 @@ class Retriever:
         query_terms = q.lower().split()
 
         for doc, meta, dist in zip(docs, metas, dists):
+            text = (doc or "").lower()
+            title = (meta or {}).get("title", "")
+            url = (meta or {}).get("url", "")
 
-            text = doc.lower()
-            keyword_score = sum(1 for term in query_terms if term in text)
+            keyword_score = 0
 
-            # embedding similarity (distance smaller = better)
+            for term in query_terms:
+                if term in title.lower():
+                    keyword_score += 3
+                if term in url.lower():
+                    keyword_score += 4
+                if term in text:
+                    keyword_score += 1
+
             embedding_score = 1 - dist
-
             final_score = embedding_score + (0.15 * keyword_score)
 
             enriched.append({
-                "doc": doc,
-                "meta": meta,
-                "dist": dist,
-                "score": final_score
+                "text": doc,
+                "title": title,
+                "url": url,
+                "topic": (meta or {}).get("topic", ""),
+                "score": final_score,
+                "distance": dist,
+                "metadata": meta or {},
             })
 
-        # Sort by new score
         enriched.sort(key=lambda x: x["score"], reverse=True)
 
-        top = enriched[:k]
-
-        # Build deduped results with confidence
         seen_urls = set()
-        items = []
+        final_docs = []
 
-        for x in top:
-            meta = x["meta"]
-            doc = x["doc"]
-            dist = x["dist"]
+        for item in enriched:
+            url = item.get("url")
 
-            url = (meta or {}).get("url")
-            if not url:
-                continue
-            if url in seen_urls:
+            if url and url in seen_urls:
                 continue
 
-            confidence = round(1 - float(dist), 3)  # simple proxy
-            items.append((meta, doc, confidence))
-            seen_urls.add(url)
-
-        # If nothing matched, return a friendly message (NOT None)
-        if not items:
-            return "\nNo results found for that query/topic.\n"
-
-        lines: List[str] = []
-        lines.append("\n==============================")
-        lines.append("Dynatrace Support Copilot (POC)")
-        lines.append("==============================\n")
-
-        # top sources
-        lines.append("Top Sources:\n")
-        for i, (m, doc, conf) in enumerate(items, start=1):
-            title = m.get("title", "Untitled")
-            url = m.get("url", "")
-            topic_val = m.get("topic", "")
-            lines.append(f"   Confidence: {conf}")
-            lines.append(f"{i}. [{topic_val.upper()}] {title}")
             if url:
-                lines.append(f"   🔗 {url}")
-            lines.append("")
+                seen_urls.add(url)
 
-        # evidence snippets
-        lines.append("")
-        lines.append("Evidence Snippets:")
-        lines.append("==================")
+            final_docs.append(item)
 
-        for i, (m, doc, conf) in enumerate(items, start=1):
-            title = m.get("title", "Untitled")
-            url = m.get("url", "")
-            topic_val = m.get("topic", "")
+            if len(final_docs) >= k:
+                break
 
-            lines.append(f"\n[{i}] {topic_val.upper()} | conf={conf}")
-            lines.append(f"Title: {title}")
-            if url:
-                lines.append(f"URL:   {url}")
+        return final_docs
 
-            snippet = clean_snippet(doc, url=url)
-            if snippet:
-                lines.append("Snippet:")
-                lines.append("  " + snippet.replace("\n", "\n  "))
-            else:
-                lines.append("Snippet: (empty)")
-            lines.append("")
-
-        return "\n".join(lines)
-from typing import Dict, Any
 
 def format_support_pack(res: Dict[str, Any]) -> str:
     """
